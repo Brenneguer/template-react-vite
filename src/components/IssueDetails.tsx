@@ -120,6 +120,7 @@ const IssueDetails = (props: IssueDetailsProps) => {
           <Autocomplete
             value={selectedParent}
             onChange={(event, value) => handleSetParentId(event, value)}
+            isOptionEqualToValue={(option, value) => value === selectedParent}
             options={tarefaPai}
             getOptionLabel={(option) => option.subject}
             fullWidth
