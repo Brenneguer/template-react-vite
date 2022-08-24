@@ -12,20 +12,26 @@ const IssueDetails = (props: IssueDetailsProps) => {
   const [date, setDate] = useState<string>("");
   const [parentId, setParentId] = useState<string>("");
   const [contact, setContact] = useState<string>("");
-  const { chatMessage, listIssues, setListIssues, index } = props;
+  const { chatMessage, listIssues, setListIssues, index, issuesProperties } = props;
 
   useEffect(() => {
-    if (chatMessage.place !== "") {
-      setSubject(chatMessage.place);
+    if (chatMessage.cliente) {
+      setSubject(chatMessage.cliente);
     }
-    if (chatMessage.text !== "") {
+    if (chatMessage.text) {
       setDescription(chatMessage.text);
     }
-    if (chatMessage.created_on !== "") {
+    if (chatMessage.created_on) {
       setDate(chatMessage.created_on);
     }
-    if (chatMessage.cliente !== "") {
-      setContact(chatMessage.cliente);
+    if (chatMessage.contact) {
+      setContact(chatMessage.contact);
+    }
+    if (chatMessage && chatMessage.place) {
+      let parent = tarefaPai.find((it) => it.subject.trim().toLowerCase() === chatMessage?.place?.trim().toLowerCase())
+      if (parent) {
+        setParentId(`${parent.id}`);
+      }
     }
   }, [chatMessage]);
 
@@ -42,7 +48,9 @@ const IssueDetails = (props: IssueDetailsProps) => {
   };
 
   const handleSetParentId = (event: any, value: any) => {
-    setParentId(value.id);
+    if (value && value.id) {
+      setParentId(value.id);
+    }
   };
 
   const handleSetContact = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -59,13 +67,19 @@ const IssueDetails = (props: IssueDetailsProps) => {
   }
 
   const handleCreateMessageChat = () => {
-    let newIssue = format(defaultUrl, parentId, description, subject, date, contact);
+    if (!subject || !description || !parentId) {
+      return;
+    }
+
+    let newIssue = format(defaultUrl, parentId, description, subject, date, contact, `${issuesProperties.assignedTo}`);
+
     let chatMessage = {
       cliente: subject,
-      place: subject,
+      place: tarefaPai.find((it) => it.id === parseInt(parentId))?.subject,
       text: description,
       created_on: date,
-      parentId: parentId,
+      parentId,
+      contact,
       url: newIssue,
     };
 
@@ -119,12 +133,9 @@ const IssueDetails = (props: IssueDetailsProps) => {
             options={tarefaPai}
             getOptionLabel={(option) => option.subject}
             fullWidth
+            value={parentId}
             renderInput={(params) => <TextField {...params} label="Tarefa Pai" />}
             onChange={(event, value) => handleSetParentId(event, value)}
-            onClick={(e) => {
-              e.defaultPrevented = true;
-              console.log(e);
-            }}
           />
           <TextField
             id="outlined"

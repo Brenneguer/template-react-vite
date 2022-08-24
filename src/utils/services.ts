@@ -17,14 +17,16 @@ export type IssueDetailsProps = {
   chatMessage: ChatMessage,
   setChatMessage: React.Dispatch<React.SetStateAction<ChatMessage>>
   index: number,
+  issuesProperties: DefaultIssuesValues,
 }
 
 export type ChatMessage = {
   cliente: string,
-  place: string,
+  place?: string,
   text: string,
   created_on: string,
   parentId: string,
+  contact: string,
   url: string,
 }
 
@@ -34,6 +36,11 @@ export type JsonType = {
       rows: ChatMessage[]
     }
   }
+}
+
+export type DefaultIssuesValues = {
+  assignedTo: number,
+  setAssignedTo: React.Dispatch<React.SetStateAction<number>>
 }
 
 export const generateMessage = (json: JsonType): ChatMessage[] => {
@@ -80,6 +87,16 @@ export const tarefaPai = parentsIssues.query_result.data.rows.sort((a, b) => {
   return 0;
 });
 
+export const users = [
+  { nome: 'Weuller', id: 27 },
+  { nome: 'Leonardo Vinicius', id: 111 },
+  { nome: 'Neemias', id: 64 },
+  { nome: 'Andrew', id: 70 },
+  { nome: 'Wendell', id: 108 },
+  { nome: 'Vinícius Messias', id: 112 },
+  { nome: 'Matheus', id: 71 },
+]
+
 /**
  *
  * @param str
@@ -88,7 +105,8 @@ export const tarefaPai = parentsIssues.query_result.data.rows.sort((a, b) => {
  * 1 - description
  * 2 - subject
  * 3 - start date
- * 4 contact
+ * 4 - contact,
+ * 5 - responsavel
  * @returns string
  */
 export const format = (str: string, ...args: string[]): string => {
@@ -100,4 +118,4 @@ export const format = (str: string, ...args: string[]): string => {
 }
 
 
-export const defaultUrl = `http://dev.ladsistemas.com.br/redmine/projects/atendimento/issues/new?issue[parent_issue_id]={0}&issue[description]={1}&issue[subject]={2}&issue[start_date]={3}&issue[custom_field_values][13]={4}&issue[tracker_id]=3&issue[assigned_to_id]=27&issue[status_id]=4&issue[priority_id]=2&issue[custom_field_values][59][]=Gerencial+-+dúvidas/relatórios.&issue[custom_field_values][91]=0&issue[custom_field_values][61]=Chat`;
+export const defaultUrl = `http://dev.ladsistemas.com.br/redmine/projects/atendimento/issues/new?issue[parent_issue_id]={0}&issue[description]={1}&issue[subject]=[{2}]&issue[start_date]={3}&issue[custom_field_values][13]={4}&issue[tracker_id]=3&issue[assigned_to_id]={5}&issue[status_id]=4&issue[priority_id]=2&issue[custom_field_values][59][]=Gerencial+-+dúvidas/relatórios.&issue[custom_field_values][91]=0&issue[custom_field_values][61]=Chat`;

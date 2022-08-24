@@ -1,5 +1,6 @@
-import { Accordion, AccordionDetails, AccordionSummary, Autocomplete, Button, Checkbox, createTheme, Grid, Link, List, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Select, Stack, TextField, ThemeProvider, Typography, useTheme, withStyles } from '@mui/material';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { Accordion, AccordionDetails, AccordionSummary, Checkbox, createTheme, Grid, Link, ListItemButton, ListItemIcon, ListItemText, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, ThemeProvider, Typography } from '@mui/material';
+import { Box } from '@mui/system';
+import { useEffect, useState } from 'react';
 import FixedValues from './components/FixedValues';
 import IssueDetails from './components/IssueDetails';
 import './style.css';
@@ -17,12 +18,14 @@ const initialMessageState = {
   text: "",
   created_on: "",
   parentId: "",
+  contact: "",
   url: "",
 }
 
 function App() {
   const [chatMessage, setChatMessage] = useState<ChatMessage>(initialMessageState);
   const [listIssues, setListIssues] = useState<ChatMessage[]>();
+  const [assignedTo, setAssignedTo] = useState<number>(27);
   const [checked, setChecked] = useState(-1);
 
   useEffect(() => {
@@ -43,6 +46,8 @@ function App() {
     setChatMessage(item);
   }
 
+  const showTable = () => listIssues ? listIssues.length > 0 : false;
+
   return (
     <ThemeProvider theme={theme}>
       <Accordion>
@@ -53,7 +58,7 @@ function App() {
           <Typography variant="h5">Valores fixos</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <FixedValues />
+          <FixedValues assignedTo={assignedTo} setAssignedTo={setAssignedTo} />
         </AccordionDetails>
       </Accordion>
       <Accordion>
@@ -70,33 +75,80 @@ function App() {
             setListIssues={setListIssues}
             listIssues={listIssues}
             index={checked}
+            issuesProperties={{ assignedTo, setAssignedTo }}
           />
         </AccordionDetails>
       </Accordion>
-      <Grid container alignItems="center" columnSpacing={4} direction="row">
-        <Grid item xs={12}>
-          <List>
-            {
-              listIssues?.map((it, index) => (
-                <ListItemButton key={listIssues.indexOf(it)} role={undefined} onClick={() => handleSelectItem(it)} dense>
-                  <ListItemIcon>
-                    <Checkbox
-                      edge="start"
-                      checked={index === checked}
-                      tabIndex={-1}
-                      disableRipple
-                      inputProps={{ 'aria-labelledby': it.cliente }}
-                      onClick={() => setChecked(index)}
-                    />
-                  </ListItemIcon>
-                  <ListItemText id={it.cliente} primary={<Link rel="noreferrer" underline="none" href={it.url} target="_blank">{<Typography>{it.cliente} {it.text}</Typography>}</Link>} />
-                </ListItemButton>
-              ))
-            }
-          </List>
-        </Grid>
-      </Grid>
-    </ThemeProvider>
+      {showTable() && (
+        <Grid container alignItems="center" columnSpacing={4} direction="row">
+          <Grid item xs={12}>
+            <Box sx={{ width: '100%' }}>
+              <Paper sx={{ width: '100%', mb: 2 }}>
+                <TableContainer>
+                  <Table size="medium">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell></TableCell>
+                        <TableCell align="left">Titulo</TableCell>
+                        <TableCell align="left">Estabelecimento</TableCell>
+                        <TableCell align="center">link</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {
+                        listIssues?.map((it, index) => {
+                          return (
+                            <TableRow
+                              hover
+                              role="checkbox"
+                              aria-checked={checked === index}
+                              tabIndex={-1}
+                              key={it.text + it.parentId + it.place + it.created_on}
+                              selected={checked === index}
+                            >
+                              <TableCell padding="checkbox">
+                                <Checkbox
+                                  edge="start"
+                                  checked={checked === index}
+                                  tabIndex={-1}
+                                  disableRipple
+                                  inputProps={{ 'aria-labelledby': it.cliente }}
+                                  onClick={() => handleSetChecked(index)}
+                                />
+                              </TableCell>
+                              <TableCell component="th"
+                                id={it.cliente}
+                                scope="row"
+                                onClick={() => handleSelectItem(it)}>
+                                {it.cliente}
+                              </TableCell>
+                              <TableCell component="th"
+                                id={it.place}
+                                scope="row"
+                                onClick={() => handleSelectItem(it)}>
+                                {it.place}
+                              </TableCell>
+                              <TableCell
+                                component="th"
+                                align="center"
+                                id={it.parentId}
+                                scope="row"
+                              >
+                                <Link underline="none" href={it.url} target="_blank">Gerar chamado</Link>
+                              </TableCell>
+                            </TableRow>
+                          )
+                        })
+                      }
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Paper>
+            </Box>
+          </Grid>
+        </Grid>)
+      }
+    </ThemeProvider >
   )
 }
 

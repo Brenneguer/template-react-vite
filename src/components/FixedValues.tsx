@@ -1,53 +1,82 @@
-const FixedValues = () => {
+import { Grid, MenuItem, TextField } from "@mui/material";
+import { Stack } from "@mui/system";
+import { DefaultIssuesValues, users } from "../utils/services";
+
+const FixedValues = (props: DefaultIssuesValues) => {
+  const { assignedTo, setAssignedTo } = props;
+  const listUsers = users;
+
+  const handleSelectUser = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    let value = event.target.value;
+    if (typeof value === 'number') {
+      setAssignedTo(value);
+    }
+  }
+
   return (
-    <>
-      <table>
-        <thead>
-          <tr>
-            <td>
-              Valores fixos da requisição
-            </td>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              issue[tracker_id]=3
-            </td>
-          </tr>
-          <tr>
-            <td>
-              issue[assigned_to_id]=27 - weuller
-            </td>
-          </tr>
-          <tr>
-            <td>
-              issue[status_id]=4 - finalizada
-            </td>
-          </tr>
-          <tr>
-            <td>
-              issue[priority_id]=2 - normal
-            </td>
-          </tr>
-          <tr>
-            <td>
-              issue[custom_field_values][59][]=Gerencial+-+dúvidas/relatórios.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              issue[custom_field_values][91]=0 - nps
-            </td>
-          </tr>
-          <tr>
-            <td>
-              issue[custom_field_values][61]=Chat
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </>
+    <Grid container alignItems="center" rowSpacing={3} direction="row">
+      <Grid item xs={12}>
+        <Stack direction="row" justifyContent="space-around" alignItems="center" spacing={2}>
+          <TextField
+            id="outlined"
+            label="Tipo"
+            fullWidth
+            value='Suporte'
+            disabled
+          />
+          <TextField
+            id="outlined"
+            label="Responsável"
+            fullWidth
+            select
+            InputLabelProps={{ shrink: true }}
+            value={assignedTo}
+            onChange={(e) => handleSelectUser(e)}
+          >
+            {
+              listUsers.map((it) => (
+                <MenuItem key={it.id} value={it.id}>
+                  {it.nome}
+                </MenuItem>
+              ))
+            }
+          </TextField>
+          <TextField
+            id="outlined"
+            label="Status"
+            fullWidth
+            value='Finalizada'
+            disabled
+          />
+        </Stack>
+      </Grid>
+      <Grid item xs={12}>
+        <Stack direction="row" justifyContent="space-around" alignItems="center" spacing={2}>
+          <TextField
+            id="outlined"
+            label="Prioridade"
+            fullWidth
+            value='Normal'
+            disabled
+          />
+          <TextField
+            id="outlined"
+            label="Motivo Suporte"
+            fullWidth
+            InputLabelProps={{ shrink: true }}
+            value="Gerencial - dúvidas/relatórios."
+            disabled
+          />
+          <TextField
+            id="outlined"
+            label="Origem"
+            fullWidth
+            value='Chat'
+            disabled
+          />
+        </Stack>
+      </Grid>
+    </Grid>
   )
 }
 
