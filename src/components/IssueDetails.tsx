@@ -11,6 +11,7 @@ const IssueDetails = (props: IssueDetailsProps) => {
   const [description, setDescription] = useState<string>("");
   const [date, setDate] = useState<string>("");
   const [parentId, setParentId] = useState<string>("");
+  const [selectedParent, setSelectedParent] = useState<any>({ id: 0, subject: "Selecione a tarefa pai" });
   const [contact, setContact] = useState<string>("");
   const { chatMessage, listIssues, setListIssues, index, issuesProperties } = props;
 
@@ -27,10 +28,13 @@ const IssueDetails = (props: IssueDetailsProps) => {
     if (chatMessage.contact) {
       setContact(chatMessage.contact);
     }
-    if (chatMessage && chatMessage.place) {
-      let parent = tarefaPai.find((it) => it.subject.trim().toLowerCase() === chatMessage?.place?.trim().toLowerCase())
+    if (chatMessage.place) {
+      let parent = tarefaPai.find((it) => it.subject === chatMessage.place);
+
       if (parent) {
         setParentId(`${parent.id}`);
+        setSelectedParent(parent);
+        console.log(parentId);
       }
     }
   }, [chatMessage]);
@@ -50,6 +54,7 @@ const IssueDetails = (props: IssueDetailsProps) => {
   const handleSetParentId = (event: any, value: any) => {
     if (value && value.id) {
       setParentId(value.id);
+      setSelectedParent(value);
     }
   };
 
@@ -75,7 +80,7 @@ const IssueDetails = (props: IssueDetailsProps) => {
 
     let chatMessage = {
       cliente: subject,
-      place: tarefaPai.find((it) => it.id === parseInt(parentId))?.subject,
+      place: tarefaPai.find((it) => it.id === parseInt(parentId))?.subject || "",
       text: description,
       created_on: date,
       parentId,
@@ -112,6 +117,14 @@ const IssueDetails = (props: IssueDetailsProps) => {
     <Grid container alignItems="center" rowSpacing={3} direction="row">
       <Grid item xs={12}>
         <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-around" alignItems="center" spacing={2}>
+          <Autocomplete
+            value={selectedParent}
+            onChange={(event, value) => handleSetParentId(event, value)}
+            options={tarefaPai}
+            getOptionLabel={(option) => option.subject}
+            fullWidth
+            renderInput={(params) => <TextField {...params} label="Tarefa Pai" />}
+          />
           <TextField
             id="outlined"
             label="Titulo"
@@ -127,14 +140,6 @@ const IssueDetails = (props: IssueDetailsProps) => {
             InputLabelProps={{ shrink: true }}
             value={date}
             onChange={(e) => handleSetDate(e)}
-          />
-          <Autocomplete
-            id="combo-box-demo"
-            options={tarefaPai}
-            getOptionLabel={(option) => option.subject}
-            fullWidth
-            renderInput={(params) => <TextField {...params} label="Tarefa Pai" />}
-            onChange={(event, value) => handleSetParentId(event, value)}
           />
           <TextField
             id="outlined"

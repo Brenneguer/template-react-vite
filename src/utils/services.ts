@@ -22,7 +22,7 @@ export type IssueDetailsProps = {
 
 export type ChatMessage = {
   cliente: string,
-  place?: string,
+  place: string,
   text: string,
   created_on: string,
   parentId: string,
@@ -54,15 +54,19 @@ export const generateMessage = (json: JsonType): ChatMessage[] => {
 
     const created_on = it.created_on.slice(0, it.created_on.indexOf('T'));
 
-    const cliente = it.cliente.slice(8, it.cliente.indexOf('\r')).replace(' ', '+');
+    const contact = it.cliente.slice(8, it.cliente.indexOf('\r')).replace(' ', '+');
 
-    const place = it.cliente
+    const placeName = it.cliente
       .slice(it.cliente.indexOf('Estabelecimento : ') + 18, it.cliente.indexOf('\r\nTelefone'))
       .toLowerCase()
       .trim();
 
+    const place = tarefaPai.find((it) => it.subject.trim().toLocaleLowerCase().includes(placeName))?.subject || placeName;
+
+    const cliente = `[${place}] - Chat com ${contact}`;
+
     const url = format(defaultUrl, "", text, `[${place}]+Chat+com+${cliente}`, created_on, cliente);
-    return ({ text, created_on, cliente, place, url }) as ChatMessage
+    return ({ text, created_on, cliente, place, contact, url }) as ChatMessage
   });
 }
 
@@ -118,4 +122,4 @@ export const format = (str: string, ...args: string[]): string => {
 }
 
 
-export const defaultUrl = `http://dev.ladsistemas.com.br/redmine/projects/atendimento/issues/new?issue[parent_issue_id]={0}&issue[description]={1}&issue[subject]=[{2}]&issue[start_date]={3}&issue[custom_field_values][13]={4}&issue[tracker_id]=3&issue[assigned_to_id]={5}&issue[status_id]=4&issue[priority_id]=2&issue[custom_field_values][59][]=Gerencial+-+dúvidas/relatórios.&issue[custom_field_values][91]=0&issue[custom_field_values][61]=Chat`;
+export const defaultUrl = `http://dev.ladsistemas.com.br/redmine/projects/atendimento/issues/new?issue[parent_issue_id]={0}&issue[description]={1}&issue[subject]={2}&issue[start_date]={3}&issue[custom_field_values][13]={4}&issue[tracker_id]=3&issue[assigned_to_id]={5}&issue[status_id]=4&issue[priority_id]=2&issue[custom_field_values][59][]=Gerencial+-+dúvidas/relatórios.&issue[custom_field_values][91]=0&issue[custom_field_values][61]=Chat`;
