@@ -111,7 +111,7 @@ const IssueDetails = (props: IssueDetailsProps) => {
   return (
     <Grid container alignItems="center" rowSpacing={3} direction="row">
       <Grid item xs={12}>
-        <Stack direction="row" justifyContent="space-around" alignItems="center" spacing={2}>
+        <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-around" alignItems="center" spacing={2}>
           <TextField
             id="outlined"
             label="Titulo"
@@ -133,7 +133,6 @@ const IssueDetails = (props: IssueDetailsProps) => {
             options={tarefaPai}
             getOptionLabel={(option) => option.subject}
             fullWidth
-            value={parentId}
             renderInput={(params) => <TextField {...params} label="Tarefa Pai" />}
             onChange={(event, value) => handleSetParentId(event, value)}
           />
