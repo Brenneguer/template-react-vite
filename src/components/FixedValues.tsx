@@ -1,9 +1,9 @@
-import { Grid, MenuItem, TextField } from "@mui/material";
+import { Autocomplete, Grid, MenuItem, TextField } from "@mui/material";
 import { Stack } from "@mui/system";
-import { DefaultIssuesValues, users } from "../utils/services";
+import { DefaultIssuesValues, reasonSupport, users } from "../utils/services";
 
 const FixedValues = (props: DefaultIssuesValues) => {
-  const { assignedTo, setAssignedTo } = props;
+  const { assignedTo, setAssignedTo, reason, setReason } = props;
   const listUsers = users;
 
   const handleSelectUser = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -11,6 +11,10 @@ const FixedValues = (props: DefaultIssuesValues) => {
     if (typeof value === 'number') {
       setAssignedTo(value);
     }
+  }
+
+  const handleChangeReason = (event: any, value: string | null) => {
+    setReason(value);
   }
 
   return (
@@ -59,13 +63,14 @@ const FixedValues = (props: DefaultIssuesValues) => {
             value='Normal'
             disabled
           />
-          <TextField
-            id="outlined"
-            label="Motivo Suporte"
+          <Autocomplete
+            value={reason}
+            isOptionEqualToValue={(option, value) => value === reason}
+            options={reasonSupport}
+            getOptionLabel={(option) => option}
             fullWidth
-            InputLabelProps={{ shrink: true }}
-            value="Gerencial - dúvidas/relatórios."
-            disabled
+            renderInput={(params) => <TextField {...params} label="Motivo Suporte" />}
+            onChange={(event, value) => handleChangeReason(event, value)}
           />
           <TextField
             id="outlined"

@@ -1,15 +1,14 @@
-import { Autocomplete, Button, Grid, TextField, Typography } from "@mui/material";
+import { Autocomplete, Button, Grid, TextField } from "@mui/material";
 import { Stack } from "@mui/system";
 import { ChangeEvent, useEffect, useState } from "react";
-import { ChatMessage, defaultUrl, format, IssueDetailsProps, JsonType, tarefaPai } from "../utils/services";
-import { generateMessage, readFile } from '../utils/services';
+import { currentDate, defaultUrl, format, generateMessage, IssueDetailsProps, JsonType, readFile, tarefaPai } from "../utils/services";
 
 import '../style.css';
 
 const IssueDetails = (props: IssueDetailsProps) => {
   const [subject, setSubject] = useState<string>("");
   const [description, setDescription] = useState<string>("");
-  const [date, setDate] = useState<string>("");
+  const [date, setDate] = useState<string>(currentDate);
   const [parentId, setParentId] = useState<string>("");
   const [selectedParent, setSelectedParent] = useState<any>({ id: 0, subject: "Selecione a tarefa pai" });
   const [contact, setContact] = useState<string>("");
@@ -34,7 +33,6 @@ const IssueDetails = (props: IssueDetailsProps) => {
       if (parent) {
         setParentId(`${parent.id}`);
         setSelectedParent(parent);
-        console.log(parentId);
       }
     }
   }, [chatMessage]);
@@ -76,7 +74,7 @@ const IssueDetails = (props: IssueDetailsProps) => {
       return;
     }
 
-    let newIssue = format(defaultUrl, parentId, description, subject, date, contact, `${issuesProperties.assignedTo}`);
+    let newIssue = format(defaultUrl, parentId, description, subject, date, contact, `${issuesProperties.assignedTo}`, `${issuesProperties.reason}`);
 
     let chatMessage = {
       cliente: subject,
@@ -92,7 +90,11 @@ const IssueDetails = (props: IssueDetailsProps) => {
       let list = [...listIssues];
       list[index] = chatMessage;
 
-      setListIssues(list);
+      setListIssues((prev) => {
+        console.log(prev);
+
+        return prev;
+      })
     }
 
     if (listIssues && index === -1) {
@@ -107,10 +109,11 @@ const IssueDetails = (props: IssueDetailsProps) => {
 
   const clearTextInput = () => {
     setSubject("");
-    setDate("");
+    setDate(currentDate);
     setDescription("");
     setContact("");
     setParentId("");
+    setSelectedParent({ id: 0, subject: "Selecione a tarefa pai" });
   }
 
   return (
@@ -135,19 +138,19 @@ const IssueDetails = (props: IssueDetailsProps) => {
           />
           <TextField
             id="outlined"
+            label="Contato"
+            fullWidth
+            value={contact}
+            onChange={(e) => handleSetContact(e)}
+          />
+          <TextField
+            id="outlined"
             label="Data"
             fullWidth
             type="date"
             InputLabelProps={{ shrink: true }}
             value={date}
             onChange={(e) => handleSetDate(e)}
-          />
-          <TextField
-            id="outlined"
-            label="Contato"
-            fullWidth
-            value={contact}
-            onChange={(e) => handleSetContact(e)}
           />
         </Stack>
       </Grid>

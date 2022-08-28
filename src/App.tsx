@@ -1,4 +1,4 @@
-import { Accordion, AccordionDetails, AccordionSummary, Checkbox, createTheme, Grid, Link, ListItemButton, ListItemIcon, ListItemText, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, ThemeProvider, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Button, Checkbox, createTheme, Grid, Link, ListItemButton, ListItemIcon, ListItemText, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, ThemeProvider, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { useEffect, useState } from 'react';
 import FixedValues from './components/FixedValues';
@@ -26,6 +26,9 @@ function App() {
   const [chatMessage, setChatMessage] = useState<ChatMessage>(initialMessageState);
   const [listIssues, setListIssues] = useState<ChatMessage[]>();
   const [assignedTo, setAssignedTo] = useState<number>(27);
+  const [expandDefaultValues, setExpandDefaultValues] = useState<boolean>(false);
+  const [expandIssuesDetails, setExpandIssuesDetails] = useState<boolean>(true);
+  const [reason, setReason] = useState<string | null>("Gerencial - dúvidas/relatórios.");
   const [checked, setChecked] = useState(-1);
 
   useEffect(() => {
@@ -40,17 +43,23 @@ function App() {
         checked === index ? setChecked(-1) : setChecked(index);
   }
 
-  const handleSelectItem = (item: ChatMessage) => {
-    setListIssues(listIssues?.filter(it => it !== item));
+  const handleSelectItem = (chat: ChatMessage) => {
+    setListIssues(listIssues?.filter(it => it !== chat));
 
-    setChatMessage(item);
+    setChatMessage(chat);
   }
 
   const showTable = () => listIssues ? listIssues.length > 0 : false;
 
+  const openIssue = (chat: ChatMessage) => {
+    window.open(chat.url, '_blank');
+
+    setListIssues(listIssues?.filter(it => it !== chat));
+  }
+
   return (
     <ThemeProvider theme={theme}>
-      <Accordion>
+      <Accordion expanded={expandDefaultValues} onChange={() => setExpandDefaultValues(!expandDefaultValues)}>
         <AccordionSummary
           aria-controls="panel1a-content"
           id="panel1a-header"
@@ -58,10 +67,10 @@ function App() {
           <Typography variant="h5">Valores fixos</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <FixedValues assignedTo={assignedTo} setAssignedTo={setAssignedTo} />
+          <FixedValues assignedTo={assignedTo} setAssignedTo={setAssignedTo} reason={reason} setReason={setReason} />
         </AccordionDetails>
       </Accordion>
-      <Accordion>
+      <Accordion expanded={expandIssuesDetails} onChange={() => setExpandIssuesDetails(!expandIssuesDetails)}>
         <AccordionSummary
           aria-controls="panel1a-content"
           id="panel1a-header"
@@ -75,7 +84,7 @@ function App() {
             setListIssues={setListIssues}
             listIssues={listIssues}
             index={checked}
-            issuesProperties={{ assignedTo, setAssignedTo }}
+            issuesProperties={{ assignedTo, setAssignedTo, reason, setReason }}
           />
         </AccordionDetails>
       </Accordion>
@@ -134,7 +143,7 @@ function App() {
                                 id={it.parentId}
                                 scope="row"
                               >
-                                <Link underline="none" href={it.url} target="_blank">Gerar chamado</Link>
+                                <Button onClick={() => openIssue(it)}>Open</Button>
                               </TableCell>
                             </TableRow>
                           )

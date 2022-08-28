@@ -41,6 +41,9 @@ export type JsonType = {
 export type DefaultIssuesValues = {
   assignedTo: number,
   setAssignedTo: React.Dispatch<React.SetStateAction<number>>
+  reason: string | null,
+  setReason: React.Dispatch<React.SetStateAction<string | null>>
+
 }
 
 export const generateMessage = (json: JsonType): ChatMessage[] => {
@@ -91,16 +94,6 @@ export const tarefaPai = parentsIssues.query_result.data.rows.sort((a, b) => {
   return 0;
 });
 
-export const users = [
-  { nome: 'Weuller', id: 27 },
-  { nome: 'Leonardo Vinicius', id: 111 },
-  { nome: 'Neemias', id: 64 },
-  { nome: 'Andrew', id: 70 },
-  { nome: 'Wendell', id: 108 },
-  { nome: 'Vinícius Messias', id: 112 },
-  { nome: 'Matheus', id: 71 },
-]
-
 /**
  *
  * @param str
@@ -111,6 +104,7 @@ export const users = [
  * 3 - start date
  * 4 - contact,
  * 5 - responsavel
+ * 6 - motivo suporte
  * @returns string
  */
 export const format = (str: string, ...args: string[]): string => {
@@ -122,4 +116,70 @@ export const format = (str: string, ...args: string[]): string => {
 }
 
 
-export const defaultUrl = `http://dev.ladsistemas.com.br/redmine/projects/atendimento/issues/new?issue[parent_issue_id]={0}&issue[description]={1}&issue[subject]={2}&issue[start_date]={3}&issue[custom_field_values][13]={4}&issue[tracker_id]=3&issue[assigned_to_id]={5}&issue[status_id]=4&issue[priority_id]=2&issue[custom_field_values][59][]=Gerencial+-+dúvidas/relatórios.&issue[custom_field_values][91]=0&issue[custom_field_values][61]=Chat`;
+export const currentDate = new Date(Date.now()).toISOString().slice(0, 10);
+
+export const users = [
+  { nome: 'Weuller', id: 27 },
+  { nome: 'Leonardo Vinicius', id: 111 },
+  { nome: 'Neemias', id: 64 },
+  { nome: 'Andrew', id: 70 },
+  { nome: 'Wendell', id: 108 },
+  { nome: 'Vinícius Messias', id: 112 },
+  { nome: 'Matheus', id: 71 },
+]
+
+export const reasonSupport = [
+  'Tomcat - não inicia.',
+  'Tomcat - fechado, Servidor / Caixa.',
+  'Tomcat - reinstalar.',
+  'Servidor offline.',
+  'Sistema não sincroniza, Servidor / Caixa.',
+  'Servidor Atualização',
+  'Caixa Tomcat não sincroniza.',
+  'Caixa Tomcat não imprime setor.',
+  'Fiscal - Impostos.',
+  'Fiscal - Certificado.',
+  'Fiscal - Comanda não fecha.',
+  'Fiscal - Reconfigurar.',
+  'Fiscal - Impressora.',
+  'Pdv - não encontra servidor.',
+  'Pdv - sem acesso a internet.',
+  'Pdv - não imprime.',
+  'Mobile - Não envia pedido',
+  'Mobile - Não encontra o servidor.',
+  'Mobile - Não conecta a rede.',
+  'Gerencial - cadastro de produto.',
+  'Gerencial - alteração de preço.',
+  'Gerencial - dúvidas/relatórios.',
+  'Gerencial - problemas fiscais/impostos.',
+  'Gerencial - esqueceu a senha.',
+  'Gerencial - Desbloqueio',
+  'Ifood - Solicitar integração.',
+  'Ifood - Desativar integração.',
+  'Ifood - Falha na integração.',
+  'Fechar Caixa - Relatorio não imprimiu.',
+  'Impressora - não imprime Setor',
+  'Impressora - rede desconfigurada',
+  'Rede - Wifi não conecta.',
+  'Rede - Sem acesso a internet.',
+  'Cancelamento.',
+  '#coronavirus - Desconto e reativação'
+];
+
+export const defaultUrl = `http://dev.ladsistemas.com.br/
+redmine/
+projects/
+atendimento/
+issues/
+new?issue[parent_issue_id]={0}&
+issue[description]={1}&
+issue[subject]={2}&
+issue[start_date]={3}&
+issue[custom_field_values][13]={4}&
+issue[tracker_id]=3&
+issue[assigned_to_id]={5}&
+issue[custom_field_values][59][]={6}&
+issue[status_id]=4&
+issue[priority_id]=2&
+issue[custom_field_values][91]=0&
+issue[custom_field_values][61]=Chat`;
