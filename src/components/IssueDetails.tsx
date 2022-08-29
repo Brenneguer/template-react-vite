@@ -1,9 +1,12 @@
 import { Autocomplete, Button, Grid, TextField } from "@mui/material";
 import { Stack } from "@mui/system";
 import { ChangeEvent, useEffect, useState } from "react";
-import { currentDate, defaultUrl, format, generateMessage, IssueDetailsProps, JsonType, readFile, tarefaPai } from "../utils/services";
+import { currentDate, format, generateMessage, readFile, tarefaPai } from "../utils/services";
+import { defaultUrl } from "../utils/constants";
+import { IssueDetailsProps, JsonType } from "../utils/types";
 
 import '../style.css';
+
 
 const IssueDetails = (props: IssueDetailsProps) => {
   const [subject, setSubject] = useState<string>("");
@@ -114,6 +117,7 @@ const IssueDetails = (props: IssueDetailsProps) => {
     setContact("");
     setParentId("");
     setSelectedParent({ id: 0, subject: "Selecione a tarefa pai" });
+    issuesProperties.setReason("Gerencial - dúvidas/relatórios.");
   }
 
   return (
@@ -177,7 +181,7 @@ const IssueDetails = (props: IssueDetailsProps) => {
         />
       </Grid>
       <Grid item>
-        <Button onClick={handleCreateMessageChat} variant="contained">Generate</Button>
+        <Button onClick={handleCreateMessageChat} variant="contained">Gerar chamado</Button>
       </Grid>
     </Grid>
   )

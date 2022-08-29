@@ -1,6 +1,7 @@
 import { Autocomplete, Grid, MenuItem, TextField } from "@mui/material";
 import { Stack } from "@mui/system";
-import { DefaultIssuesValues, reasonSupport, users } from "../utils/services";
+import { reasonSupport, users } from "../utils/constants";
+import { DefaultIssuesValues } from "../utils/types";
 
 const FixedValues = (props: DefaultIssuesValues) => {
   const { assignedTo, setAssignedTo, reason, setReason } = props;

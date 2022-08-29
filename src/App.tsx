@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import FixedValues from './components/FixedValues';
 import IssueDetails from './components/IssueDetails';
 import './style.css';
-import { ChatMessage } from './utils/services';
+import { ChatMessage } from './utils/types';
 
 const theme = createTheme({
   palette: {
@@ -143,7 +143,7 @@ function App() {
                                 id={it.parentId}
                                 scope="row"
                               >
-                                <Button onClick={() => openIssue(it)}>Open</Button>
+                                <Button onClick={() => openIssue(it)}>Abrir tarefa</Button>
                               </TableCell>
                             </TableRow>
                           )
