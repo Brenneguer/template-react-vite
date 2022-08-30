@@ -1,8 +1,8 @@
 import { Autocomplete, Button, Grid, TextField } from "@mui/material";
 import { Stack } from "@mui/system";
 import { ChangeEvent, useEffect, useState } from "react";
-import { currentDate, format, generateMessage, readFile, tarefaPai } from "../utils/services";
 import { defaultUrl } from "../utils/constants";
+import { currentDate, format, generateMessage, readFile, tarefaPai } from "../utils/services";
 import { IssueDetailsProps, JsonType } from "../utils/types";
 
 import '../style.css';
@@ -77,7 +77,7 @@ const IssueDetails = (props: IssueDetailsProps) => {
       return;
     }
 
-    let newIssue = format(defaultUrl, parentId, description, subject, date, contact, `${issuesProperties.assignedTo}`, `${issuesProperties.reason}`);
+    let newIssue = format(defaultUrl, parentId, description.replaceAll('\n', '%0A'), subject, date, contact, `${issuesProperties.assignedTo}`, `${issuesProperties.reason}`);
 
     let chatMessage = {
       cliente: subject,
