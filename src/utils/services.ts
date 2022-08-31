@@ -1,9 +1,18 @@
-import parentsIssues from '../../parent_issue.json';
+import axios from 'axios';
 import { defaultUrl } from './constants';
 import { ChatMessage, JsonType } from './types';
 
+export const fetchParentIssues = async () => axios({
+  method: 'GET',
+  url: 'https://bi.ladfood.com.br/api/queries/732/results.json?api_key=D1SinuOnMVZTOKRz7kKQqvQuLaNhe7lpBQrY5vXt'
+}).then((it) => {
+  const value = it.data.query_result.data.rows;
+  window.localStorage.setItem("issuesParentIds", JSON.stringify(value));
+})
+
 export const generateMessage = (json: JsonType): ChatMessage[] => {
   const messages = json.query_result.data.rows;
+  const tarefasPai = orderTarefaPai();
 
   return messages.map((it) => {
     const text = JSON.parse(it.text).messages
@@ -20,7 +29,7 @@ export const generateMessage = (json: JsonType): ChatMessage[] => {
       .toLowerCase()
       .trim();
 
-    const place = tarefaPai.find((it) => it.subject.trim().toLocaleLowerCase().includes(placeName))?.subject || placeName;
+    const place = tarefasPai.find((it) => it.subject.trim().toLocaleLowerCase().includes(placeName))?.subject || placeName;
 
     const cliente = `[${place}] - Chat com ${contact}`;
 
@@ -40,15 +49,22 @@ export const readFile = (file: any) => {
   })
 }
 
-export const tarefaPai = parentsIssues.query_result.data.rows.sort((a, b) => {
-  if (a.subject.trim().toLowerCase() > b.subject.trim().toLowerCase()) {
-    return 1;
-  }
-  if (a.subject.trim().toLowerCase() < b.subject.trim().toLowerCase()) {
-    return -1;
-  }
-  return 0;
-});
+export const getLocalStorage = (): any[] => {
+  let value = window.localStorage.getItem("issuesParentIds");
+  return JSON.parse(`${value}`);
+}
+
+export const orderTarefaPai = (): any[] => {
+  return getLocalStorage().sort((a, b) => {
+    if (a.subject.trim().toLowerCase() > b.subject.trim().toLowerCase()) {
+      return 1;
+    }
+    if (a.subject.trim().toLowerCase() < b.subject.trim().toLowerCase()) {
+      return -1;
+    }
+    return 0;
+  })
+}
 
 /**
  *
@@ -70,6 +86,5 @@ export const format = (str: string, ...args: string[]): string => {
       : match
   });
 }
-
 
 export const currentDate = new Date(Date.now()).toISOString().slice(0, 10);

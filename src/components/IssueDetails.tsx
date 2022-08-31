@@ -2,7 +2,7 @@ import { Autocomplete, Button, Grid, TextField } from "@mui/material";
 import { Stack } from "@mui/system";
 import { ChangeEvent, useEffect, useState } from "react";
 import { defaultUrl } from "../utils/constants";
-import { currentDate, format, generateMessage, readFile, tarefaPai } from "../utils/services";
+import { currentDate, format, generateMessage, readFile, getLocalStorage, orderTarefaPai } from "../utils/services";
 import { IssueDetailsProps, JsonType } from "../utils/types";
 
 import '../style.css';
@@ -15,9 +15,12 @@ const IssueDetails = (props: IssueDetailsProps) => {
   const [parentId, setParentId] = useState<string>("");
   const [selectedParent, setSelectedParent] = useState<any>({ id: 0, subject: "Selecione a tarefa pai" });
   const [contact, setContact] = useState<string>("");
+  const [tarefaPai, setTarefaPai] = useState<any[]>([]);
   const { chatMessage, listIssues, setListIssues, index, issuesProperties } = props;
 
   useEffect(() => {
+    setTarefaPai(orderTarefaPai());
+
     if (chatMessage.cliente) {
       setSubject(chatMessage.cliente);
     }

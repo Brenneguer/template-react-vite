@@ -1,9 +1,10 @@
-import { Accordion, AccordionDetails, AccordionSummary, Button, Checkbox, createTheme, Grid, Link, ListItemButton, ListItemIcon, ListItemText, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, ThemeProvider, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Button, Checkbox, CircularProgress, createTheme, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, ThemeProvider, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { useEffect, useState } from 'react';
 import FixedValues from './components/FixedValues';
 import IssueDetails from './components/IssueDetails';
 import './style.css';
+import { fetchParentIssues, getLocalStorage } from './utils/services';
 import { ChatMessage } from './utils/types';
 
 const theme = createTheme({
@@ -30,12 +31,22 @@ function App() {
   const [expandIssuesDetails, setExpandIssuesDetails] = useState<boolean>(true);
   const [reason, setReason] = useState<string | null>("Gerencial - dúvidas/relatórios.");
   const [checked, setChecked] = useState(-1);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const getDataParentIds = async () => {
+      await fetchParentIssues().then(() => setLoading(false));
+    }
+
+    getLocalStorage() === null ?
+      getDataParentIds() : setLoading(false);
+  }, [setLoading])
 
   useEffect(() => {
     if (!listIssues) {
       setListIssues([]);
     }
-  })
+  }, [setListIssues])
 
   const handleSetChecked = (index: number) => {
     checked === -1 ? setChecked(index) :
@@ -59,104 +70,111 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <Accordion expanded={expandDefaultValues} onChange={() => setExpandDefaultValues(!expandDefaultValues)}>
-        <AccordionSummary
-          aria-controls="panel1a-content"
-          id="panel1a-header"
-        >
-          <Typography variant="h5">Valores fixos</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <FixedValues assignedTo={assignedTo} setAssignedTo={setAssignedTo} reason={reason} setReason={setReason} />
-        </AccordionDetails>
-      </Accordion>
-      <Accordion expanded={expandIssuesDetails} onChange={() => setExpandIssuesDetails(!expandIssuesDetails)}>
-        <AccordionSummary
-          aria-controls="panel1a-content"
-          id="panel1a-header"
-        >
-          <Typography>Detalhes do Chamado</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <IssueDetails
-            chatMessage={chatMessage}
-            setChatMessage={setChatMessage}
-            setListIssues={setListIssues}
-            listIssues={listIssues}
-            index={checked}
-            issuesProperties={{ assignedTo, setAssignedTo, reason, setReason }}
-          />
-        </AccordionDetails>
-      </Accordion>
-      {showTable() && (
-        <Grid container alignItems="center" columnSpacing={4} direction="row">
-          <Grid item xs={12}>
-            <Box sx={{ width: '100%' }}>
-              <Paper sx={{ width: '100%', mb: 2 }}>
-                <TableContainer>
-                  <Table size="medium">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell></TableCell>
-                        <TableCell align="left">Titulo</TableCell>
-                        <TableCell align="left">Estabelecimento</TableCell>
-                        <TableCell align="center">link</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {
-                        listIssues?.map((it, index) => {
-                          return (
-                            <TableRow
-                              hover
-                              role="checkbox"
-                              aria-checked={checked === index}
-                              tabIndex={-1}
-                              key={it.text + it.parentId + it.place + it.created_on}
-                              selected={checked === index}
-                            >
-                              <TableCell padding="checkbox">
-                                <Checkbox
-                                  edge="start"
-                                  checked={checked === index}
-                                  tabIndex={-1}
-                                  disableRipple
-                                  inputProps={{ 'aria-labelledby': it.cliente }}
-                                  onClick={() => handleSetChecked(index)}
-                                />
-                              </TableCell>
-                              <TableCell component="th"
-                                id={it.cliente}
-                                scope="row"
-                                onClick={() => handleSelectItem(it)}>
-                                {it.cliente}
-                              </TableCell>
-                              <TableCell component="th"
-                                id={it.place}
-                                scope="row"
-                                onClick={() => handleSelectItem(it)}>
-                                {it.place}
-                              </TableCell>
-                              <TableCell
-                                component="th"
-                                align="center"
-                                id={it.parentId}
-                                scope="row"
-                              >
-                                <Button onClick={() => openIssue(it)}>Abrir tarefa</Button>
-                              </TableCell>
-                            </TableRow>
-                          )
-                        })
-                      }
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              </Paper>
-            </Box>
-          </Grid>
-        </Grid>)
-      }
+      {
+        loading ? (
+          <CircularProgress />
+        ) :
+          (
+            <>
+              <Accordion expanded={expandDefaultValues} onChange={() => setExpandDefaultValues(!expandDefaultValues)}>
+                <AccordionSummary
+                  aria-controls="panel1a-content"
+                  id="panel1a-header"
+                >
+                  <Typography variant="h5">Valores fixos</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <FixedValues assignedTo={assignedTo} setAssignedTo={setAssignedTo} reason={reason} setReason={setReason} />
+                </AccordionDetails>
+              </Accordion>
+              <Accordion expanded={expandIssuesDetails} onChange={() => setExpandIssuesDetails(!expandIssuesDetails)}>
+                <AccordionSummary
+                  aria-controls="panel1a-content"
+                  id="panel1a-header"
+                >
+                  <Typography>Detalhes do Chamado</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <IssueDetails
+                    chatMessage={chatMessage}
+                    setChatMessage={setChatMessage}
+                    setListIssues={setListIssues}
+                    listIssues={listIssues}
+                    index={checked}
+                    issuesProperties={{ assignedTo, setAssignedTo, reason, setReason }}
+                  />
+                </AccordionDetails>
+              </Accordion>
+              {showTable() && (
+                <Grid container alignItems="center" columnSpacing={4} direction="row">
+                  <Grid item xs={12}>
+                    <Box sx={{ width: '100%' }}>
+                      <Paper sx={{ width: '100%', mb: 2 }}>
+                        <TableContainer>
+                          <Table size="medium">
+                            <TableHead>
+                              <TableRow>
+                                <TableCell></TableCell>
+                                <TableCell align="left">Titulo</TableCell>
+                                <TableCell align="left">Estabelecimento</TableCell>
+                                <TableCell align="center">link</TableCell>
+                              </TableRow>
+                            </TableHead>
+                            <TableBody>
+                              {
+                                listIssues?.map((it, index) => {
+                                  return (
+                                    <TableRow
+                                      hover
+                                      role="checkbox"
+                                      aria-checked={checked === index}
+                                      tabIndex={-1}
+                                      key={it.text + it.parentId + it.place + it.created_on}
+                                      selected={checked === index}
+                                    >
+                                      <TableCell padding="checkbox">
+                                        <Checkbox
+                                          edge="start"
+                                          checked={checked === index}
+                                          tabIndex={-1}
+                                          disableRipple
+                                          inputProps={{ 'aria-labelledby': it.cliente }}
+                                          onClick={() => handleSetChecked(index)}
+                                        />
+                                      </TableCell>
+                                      <TableCell component="th"
+                                        id={it.cliente}
+                                        scope="row"
+                                        onClick={() => handleSelectItem(it)}>
+                                        {it.cliente}
+                                      </TableCell>
+                                      <TableCell component="th"
+                                        id={it.place}
+                                        scope="row"
+                                        onClick={() => handleSelectItem(it)}>
+                                        {it.place}
+                                      </TableCell>
+                                      <TableCell
+                                        component="th"
+                                        align="center"
+                                        id={it.parentId}
+                                        scope="row"
+                                      >
+                                        <Button onClick={() => openIssue(it)}>Abrir tarefa</Button>
+                                      </TableCell>
+                                    </TableRow>
+                                  )
+                                })
+                              }
+                            </TableBody>
+                          </Table>
+                        </TableContainer>
+                      </Paper>
+                    </Box>
+                  </Grid>
+                </Grid>)
+              }
+            </>)}
     </ThemeProvider >
   )
 }
