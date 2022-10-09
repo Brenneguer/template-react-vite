@@ -2,7 +2,7 @@ import { Autocomplete, Button, Grid, TextField } from "@mui/material";
 import { Stack } from "@mui/system";
 import { ChangeEvent, useEffect, useState } from "react";
 import { defaultUrl } from "../utils/constants";
-import { currentDate, format, generateMessage, readFile, getLocalStorage, orderTarefaPai } from "../utils/services";
+import { currentDate, format, generateMessage, orderTarefaPai, readFile } from "../utils/services";
 import { IssueDetailsProps, JsonType } from "../utils/types";
 
 import '../style.css';

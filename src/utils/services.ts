@@ -4,10 +4,10 @@ import { ChatMessage, JsonType } from './types';
 
 export const fetchParentIssues = async () => axios({
   method: 'GET',
-  url: 'https://bi.ladfood.com.br/api/queries/732/results.json?api_key=D1SinuOnMVZTOKRz7kKQqvQuLaNhe7lpBQrY5vXt'
+  url: 'https://api.sitesbrenneguer.com/parents/issues'
 }).then((it) => {
   const value = it.data.query_result.data.rows;
-  window.localStorage.setItem("issuesParentIds", JSON.stringify(value));
+  window.sessionStorage.setItem("issuesParentIds", JSON.stringify(value));
 })
 
 export const generateMessage = (json: JsonType): ChatMessage[] => {
@@ -50,7 +50,7 @@ export const readFile = (file: any) => {
 }
 
 export const getLocalStorage = (): any[] => {
-  let value = window.localStorage.getItem("issuesParentIds");
+  let value = window.sessionStorage.getItem("issuesParentIds");
   return JSON.parse(`${value}`);
 }
 

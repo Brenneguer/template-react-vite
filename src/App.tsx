@@ -1,4 +1,4 @@
-import { Accordion, AccordionDetails, AccordionSummary, Button, Checkbox, CircularProgress, createTheme, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, ThemeProvider, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Button, Checkbox, CircularProgress, createTheme, Grid, Link, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, ThemeProvider, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { useEffect, useState } from 'react';
 import FixedValues from './components/FixedValues';
@@ -160,7 +160,9 @@ function App() {
                                         id={it.parentId}
                                         scope="row"
                                       >
-                                        <Button onClick={() => openIssue(it)}>Abrir tarefa</Button>
+                                        <Button>
+                                          <Link underline='none' href={it.url} target='_blank' variant='button'>Abrir Tarefa</Link>
+                                        </Button>
                                       </TableCell>
                                     </TableRow>
                                   )
